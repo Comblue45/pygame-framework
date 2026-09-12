@@ -5,7 +5,11 @@ import pygame
 from ecs_engine.ecs_engine import ECSEngine
 from ecs_engine.general.world import World
 from ecs_engine.components.render_component import RenderComponent
+from ecs_engine.components.hirachie import Hirachie
 from ecs_engine.ecs.component import Component, dataclass
+from ecs_engine.helpers.move import move
+from ecs_engine.helpers.connect import connect
+from ecs_engine.helpers.disconnect import disconnect
 
 @dataclass(slots=True)
 class Moveable(Component):
@@ -14,22 +18,50 @@ class Moveable(Component):
 def moveable_system(world: World):
     movable_entities = world.ecs.get_entities_by_components([Moveable, RenderComponent])
 
-    if world.input.keys_pressed[pygame.K_g]:
+    if world.input.keys_down[pygame.K_g]:
         movable_entities = world.ecs.get_entities_by_components([Moveable, RenderComponent])
 
         for movable_entity in movable_entities:
-            rendering_component = world.ecs.get_component_of_entity(movable_entity, RenderComponent)
-            rendering_component.screen_position += (50.0, 50.0)
-            world.ecs.remove_component_of_entity(movable_entity, Moveable)
+            move(movable_entity, pygame.Vector2(50.0, 50.0), world.ecs)
 
-game = ECSEngine(systems=[moveable_system], component_types=[Moveable])
+    if world.input.keys_pressed[pygame.K_w]:
+        for movable_entity in movable_entities:
+            move(movable_entity, pygame.Vector2(0.0, -300.0) * world.time.dt, world.ecs)
+    if world.input.keys_pressed[pygame.K_s]:
+        for movable_entity in movable_entities:
+            move(movable_entity, pygame.Vector2(0.0, 300.0) * world.time.dt, world.ecs)
+    if world.input.keys_pressed[pygame.K_a]:
+        for movable_entity in movable_entities:
+            move(movable_entity, pygame.Vector2(-300.0, 0.0) * world.time.dt, world.ecs)
+    if world.input.keys_pressed[pygame.K_d]:
+        for movable_entity in movable_entities:
+            move(movable_entity, pygame.Vector2(300.0, 0.0) * world.time.dt, world.ecs)
+
+    # print(world.time.clock.get_fps())
+
+def test_hirachie_system(world: World):
+    hirachie_entities = world.ecs.get_entities_by_component(Hirachie)
+
+    if world.input.keys_down[pygame.K_x]:
+        for entity in hirachie_entities:
+            hirachie_component = world.ecs.get_component_of_entity(entity, Hirachie)
+
+            if hirachie_component.parent is not None:
+                disconnect(hirachie_component.parent, entity, world.ecs)
+
+game = ECSEngine(systems=[moveable_system, test_hirachie_system], component_types=[Moveable])
 
 game.setup()
 
-test_entity = game.create_entity()
 surface = pygame.Surface((100,100))
 surface.fill("green")
-game.add_component_to_entity(test_entity, RenderComponent(surface, pygame.Vector2(50,50)))
+test_entity = game.create_entity(surface=surface, position=(50, 50))
 game.add_component_to_entity(test_entity, Moveable())
+
+surface = pygame.Surface((100,100))
+surface.fill("red")
+test_entity_2 = game.create_entity(surface=surface, position=(50, 50))
+
+connect(test_entity, test_entity_2, game.ecs)
 
 game.start()

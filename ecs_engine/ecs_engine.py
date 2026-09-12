@@ -12,8 +12,14 @@ from ecs_engine.runtime.time import Time
 from ecs_engine.general.world import World
 
 from ecs_engine.systems.render_system import render_system
+from ecs_engine.systems.synchronize_system import synchronize_system
 
 from ecs_engine.components.render_component import RenderComponent
+from ecs_engine.components.transform_component import TransformComponent
+from ecs_engine.components.hirachie import Hirachie
+from ecs_engine.components.chace_component import ChaceComponent
+from ecs_engine.components.transform_dirty_flag import TransformDirtyFlag
+from ecs_engine.components.sychnronise_flag import SynchroniseFlag
 
 class ECSEngine:
 
@@ -38,10 +44,21 @@ class ECSEngine:
                            time=self.time)
 
         self.systems = systems if systems is not None else []
-        self.systems.append(render_system)
+
+        engine_systems = [render_system, synchronize_system]
+        for engine_system in engine_systems:
+            self.systems.append(engine_system)
 
         self.component_types = component_types if component_types is not None else []
-        self.component_types.append(RenderComponent)
+
+        engine_components = [RenderComponent, 
+                             TransformComponent, 
+                             Hirachie, 
+                             ChaceComponent, 
+                             TransformDirtyFlag, 
+                             SynchroniseFlag]
+        for engine_component in engine_components:
+            self.component_types.append(engine_component)
 
         self.running = False
 
@@ -85,8 +102,25 @@ class ECSEngine:
             if event.type == pygame.QUIT:
                 self.running = False
 
-    def create_entity(self) -> int:
-        return self.ecs.create_entity()
+    def create_entity(
+        self, 
+        surface: pygame.Surface, 
+        position: tuple[int, int] = (0, 0),
+        ) -> int:
+        entity = self.ecs.create_entity()
+
+        self.ecs.add_component_to_entity(entity, RenderComponent(surface, pygame.Vector2(position)))
+
+        self.ecs.add_component_to_entity(entity, TransformComponent(pygame.Vector2(position)))
+
+        self.ecs.add_component_to_entity(entity, ChaceComponent(pygame.Vector2(position), pygame.Vector2(position)))
+
+        self.ecs.add_component_to_entity(entity, Hirachie(None, set()))
+
+        self.ecs.add_component_to_entity(entity, TransformDirtyFlag())
+        self.ecs.add_component_to_entity(entity, SynchroniseFlag())
+
+        return entity
 
     def add_component_to_entity(
         self,

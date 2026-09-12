@@ -63,6 +63,13 @@ class ECS:
     ) -> None:
         del self._components[component_type][entity]
 
+    def entity_has_component(
+        self,
+        entity: int,
+        component_type: type[Component]
+    ) -> bool:
+        return entity in self._components[component_type].keys()
+
     def add_system(self, system: Callable) -> None:
         self._systems.add(system)
 
