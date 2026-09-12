@@ -49,18 +49,28 @@ def test_hirachie_system(world: World):
             if hirachie_component.parent is not None:
                 disconnect(hirachie_component.parent, entity, world.ecs)
 
-game = ECSEngine(systems=[moveable_system, test_hirachie_system], component_types=[Moveable])
+def test_tag_system(world: World):
+    tags = world.tags
+
+    entities = tags.get_entities_with_tag("entity")
+    test = tags.get_entities_with_tag("test")
+    test_2 = tags.get_entities_with_tag("test2")
+    bullshit = tags.get_entities_with_tags({"entity", "bullshit"})
+
+    print(f"Entity: {entities}; test: {test}; test_2: {test_2}; bullshit: {bullshit}")
+
+game = ECSEngine(systems=[moveable_system, test_hirachie_system, test_tag_system], component_types=[Moveable])
 
 game.setup()
 
 surface = pygame.Surface((100,100))
 surface.fill("green")
-test_entity = game.create_entity(surface=surface, position=(50, 50))
+test_entity = game.create_entity(surface=surface, position=(50, 50), tags={"entity", "test", "bullshit"})
 game.add_component_to_entity(test_entity, Moveable())
 
 surface = pygame.Surface((100,100))
 surface.fill("red")
-test_entity_2 = game.create_entity(surface=surface, position=(50, 50))
+test_entity_2 = game.create_entity(surface=surface, position=(50, 50), layer=2, tags={"entity", "test2", "bullshit"})
 
 connect(test_entity, test_entity_2, game.ecs)
 

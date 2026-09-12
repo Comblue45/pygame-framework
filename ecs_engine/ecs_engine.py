@@ -10,6 +10,8 @@ from ecs_engine.runtime.input import Input
 from ecs_engine.runtime.time import Time
 
 from ecs_engine.general.world import World
+from ecs_engine.general.layer import Layer
+from ecs_engine.general.tags import Tags
 
 from ecs_engine.systems.render_system import render_system
 from ecs_engine.systems.synchronize_system import synchronize_system
@@ -38,10 +40,15 @@ class ECSEngine:
         self.input = Input()
         self.time = Time(fps=fps)
 
+        self.layer = Layer()
+        self.tags = Tags()
+
         self.world = World(ecs=self.ecs,
                            window=self.window,
                            input=self.input,
-                           time=self.time)
+                           time=self.time,
+                           layer=self.layer,
+                           tags=self.tags)
 
         self.systems = systems if systems is not None else []
 
@@ -106,6 +113,8 @@ class ECSEngine:
         self, 
         surface: pygame.Surface, 
         position: tuple[int, int] = (0, 0),
+        layer: int = 1,
+        tags: set[str] | None = None
         ) -> int:
         entity = self.ecs.create_entity()
 
@@ -119,6 +128,12 @@ class ECSEngine:
 
         self.ecs.add_component_to_entity(entity, TransformDirtyFlag())
         self.ecs.add_component_to_entity(entity, SynchroniseFlag())
+
+        self.layer.register(entity, layer)
+
+        tags = tags if tags is not None else set()
+        for tag in tags:
+            self.tags.register(entity, tag)
 
         return entity
 
