@@ -83,10 +83,15 @@ class ECSEngine:
     def start(self) -> None:
         self.running = True
 
+        self._setup_entities()
+
         while self.running:
             self._handle_frame()
 
         self.window.quit()
+
+    def _setup_entities(self) -> None:
+        pass
 
     def _handle_frame(self) -> None:
         self.input.update()
