@@ -72,7 +72,6 @@ class ECSEngine:
         self.background_color = background_color
 
     def setup(self) -> None:
-        self.ecs.add_system(render_system)
 
         for component in self.component_types:
             self.ecs.add_component_type(component)
@@ -100,8 +99,6 @@ class ECSEngine:
 
         for system in self.systems:
             self.ecs.call_system(system, self.world)
-
-        self.ecs.call_system(render_system, self.world)
 
         self.window.render()
 

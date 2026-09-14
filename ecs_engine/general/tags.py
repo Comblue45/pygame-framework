@@ -15,7 +15,7 @@ class Tags:
     def check_out(self, entity: int, entity_tag: str) -> None:
         if not entity in self.tags[entity_tag]:
             for tag in self.tags.keys():
-                if entity in self.tags[entity_tag]:
+                if entity in self.tags[tag]:
                     entity_tag = tag
                     break
 
