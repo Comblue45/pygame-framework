@@ -29,7 +29,7 @@ class Layer:
     def get_rendering_order_iterable(self) -> Iterable:
         rendering_order: list[int] = []
 
-        for layer in sorted(self.layers.keys(), reverse=True):
+        for layer in sorted(self.layers.keys()):
             rendering_order = rendering_order + list(self.layers[layer])
 
         return rendering_order
