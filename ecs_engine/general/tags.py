@@ -13,12 +13,6 @@ class Tags:
         self.tags[entity_tag].add(entity)
 
     def check_out(self, entity: int, entity_tag: str) -> None:
-        if not entity in self.tags[entity_tag]:
-            for tag in self.tags.keys():
-                if entity in self.tags[tag]:
-                    entity_tag = tag
-                    break
-
         self.tags[entity_tag].remove(entity)
 
     def get_entities_with_tag(self, tag: str) -> set[int]:

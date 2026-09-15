@@ -18,12 +18,6 @@ class Layer:
         self.layers[entity_layer].add(entity)
 
     def check_out(self, entity: int, entity_layer: int) -> None:
-        if not entity in self.layers[entity_layer]:
-            for layer in self.layers.keys():
-                if entity in self.layers[layer]:
-                    entity_layer = layer
-                    break
-
         self.layers[entity_layer].remove(entity)
 
     def get_rendering_order_iterable(self) -> Iterable:
