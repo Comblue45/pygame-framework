@@ -114,7 +114,7 @@ class ECSEngine:
     def create_entity(
         self, 
         surface: pygame.Surface, 
-        position: tuple[int, int] = (0, 0),
+        position: tuple[float, float] = (0, 0),
         layer: int = 1,
         tags: set[str] | None = None
         ) -> int:
