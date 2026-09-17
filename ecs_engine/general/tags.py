@@ -36,3 +36,12 @@ class Tags:
             entities = entities.intersection(process_set)
 
         return entities
+
+    def get_tags_of_entity(self, entity: int) -> set[str]:
+        tags = set()
+
+        for tag in self.tags.keys():
+            if entity in self.tags[tag]:
+                tags.add(tag)
+
+        return tags

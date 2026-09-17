@@ -11,7 +11,7 @@ def updati(dt: float, ) -> None:
     pass
 class Spawner(Entity):
 
-    def __init__(self, count: int = 10000, deebug_callbacks: bool = False, *args, **kwargs) -> None:
+    def __init__(self, count: int = 2000, deebug_callbacks: bool = False, *args, **kwargs) -> None:
         super().__init__(surface=pygame.Surface((100,100)), *args, **kwargs)
 
         self.count = count
